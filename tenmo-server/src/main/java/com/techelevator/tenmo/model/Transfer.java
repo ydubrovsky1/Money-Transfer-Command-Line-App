@@ -1,5 +1,8 @@
 package com.techelevator.tenmo.model;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Min;
+
 public class Transfer {
     private int transfer_id;
     private int transfer_type_id;
@@ -9,6 +12,7 @@ public class Transfer {
     //ToDO: Account objects or just ints account numbers?
     private int account_from;
     private int account_to;
+    @DecimalMin(value = "0.01", message = "Minimum amount to transfer must be larger than '0.01'")
     private double amount;
 
 
