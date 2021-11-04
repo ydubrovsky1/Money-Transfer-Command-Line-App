@@ -6,12 +6,15 @@ import com.techelevator.tenmo.dao.UserDao;
 import com.techelevator.tenmo.exception.InsufficientFunds;
 import com.techelevator.tenmo.exception.UserDoesNotExist;
 import com.techelevator.tenmo.model.Transfer;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+@PreAuthorize("isAuthenticated()")
 @RestController
 public class TransferController {
     private TransferDao transferDao;
@@ -40,7 +43,7 @@ public class TransferController {
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
     public Transfer transferFunds(
             //FIXME changed to take in request body as transfer
-            Principal principal, @RequestBody Transfer returnTransfer
+            Principal principal, @Valid @RequestBody Transfer returnTransfer
     ) throws UserDoesNotExist, InsufficientFunds {
         return transferDao.transferFunds(returnTransfer);
     }
