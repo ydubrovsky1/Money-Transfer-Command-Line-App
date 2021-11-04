@@ -14,6 +14,6 @@ public interface TransferDao {
     List<Transfer> getAllUserTransfers(int accountId);
 
     //transfer funds
-    Transfer transferFunds(int userId, String recipientName, double transferAmt) throws UserDoesNotExist, InsufficientFunds;
+    Transfer transferFunds(Transfer transferFromClient) throws UserDoesNotExist, InsufficientFunds;
 
 }

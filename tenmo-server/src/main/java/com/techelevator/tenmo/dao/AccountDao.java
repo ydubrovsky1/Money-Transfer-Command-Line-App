@@ -1,19 +1,25 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exception.UserDoesNotExist;
+import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 public interface AccountDao {
 
     //get account balance
-    double getBalance(int userId) throws UserDoesNotExist;
+    double getBalance(int accountId) throws UserDoesNotExist;
 
     //withdraw from account balance
-    void withdraw(int accountId, double amount);
+    //FIXME changed to take a transfer and use account_to and from as amount
+    void withdraw(Transfer transferFromClient);
 
     //deposit
-    void deposit(int accountId, double amount);
+    void deposit(Transfer transferFromClient);
 
     //gets accountId using userId
-    int getAccountByUserId(int userId) throws UserDoesNotExist;
+    Account getAccountByUserName(String userName) throws UserDoesNotExist;
+
+
 
 }

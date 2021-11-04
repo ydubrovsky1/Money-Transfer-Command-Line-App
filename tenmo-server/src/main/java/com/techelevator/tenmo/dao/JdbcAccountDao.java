@@ -1,6 +1,8 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exception.UserDoesNotExist;
+import com.techelevator.tenmo.model.Account;
+import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -14,13 +16,12 @@ public class JdbcAccountDao implements AccountDao{
     }
 
     @Override
-    public double getBalance(int userId) throws UserDoesNotExist{
-        String sql = "SELECT a.balance " +
-                "FROM accounts a " +
-                "JOIN users u " +
-                "ON u.user_id = a.user_id " +
-                "WHERE a.user_id = ?;";
-        Double results = jdbcTemplate.queryForObject(sql, Double.class, userId);
+    public double getBalance(int accountId) throws UserDoesNotExist{
+        //FIXME changed to use account ID instead of user ID
+        String sql = "SELECT balance " +
+                "FROM accounts " +
+                "WHERE account_id = ?;";
+        Double results = jdbcTemplate.queryForObject(sql, Double.class, accountId);
         if(results != null) {
             return results;
         } else {
@@ -29,33 +30,43 @@ public class JdbcAccountDao implements AccountDao{
     }
 
     @Override
-    public void withdraw(int accountId, double amount) {
+    public void withdraw(Transfer transferFromClient) {
         String sql = "UPDATE accounts " +
                 "SET balance = balance - ? " +
                 "WHERE account_id = ?;";
-        jdbcTemplate.update(sql, amount, accountId);
+        jdbcTemplate.update(sql, transferFromClient.getAccount_from(), transferFromClient.getAmount());
     }
 
     @Override
-    public void deposit(int accountId, double amount) {
+    public void deposit(Transfer transferFromClient) {
         String sql = "UPDATE accounts " +
                 "SET balance = balance + ? " +
                 "WHERE account_id = ?;";
-        jdbcTemplate.update(sql, amount, accountId);
+        jdbcTemplate.update(sql, transferFromClient.getAccount_from(), transferFromClient.getAmount());
     }
 
     @Override
-    public int getAccountByUserId(int userId) throws UserDoesNotExist {
-        String sql = "SELECT a.account_id  " +
+    public Account getAccountByUserName(String userName) throws UserDoesNotExist {
+        Account returnAccount = null;
+        String sql = "SELECT a.account_id, a.user_id, a.balance, u.username  " +
                 "FROM accounts a " +
                 "JOIN users u " +
                 "ON u.user_id = a.user_id " +
-                "WHERE a.user_id = ?;";
-        Integer results = jdbcTemplate.queryForObject(sql, Integer.class, userId);
-        if (results != null) {
-            return results;
+                "WHERE u.username = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, userName);
+        if (results.next()) {
+            return mapRowToAccount(results);
         } else {
             throw new UserDoesNotExist();
         }
+    }
+
+    private Account mapRowToAccount(SqlRowSet result) {
+        Account account = new Account();
+        account.setAccount_id(result.getInt("account_id"));
+        account.setUser_id(result.getInt("user_id"));
+        account.setBalance(result.getDouble("balance"));
+        account.setUsername(result.getString("username"));
+        return account;
     }
 }

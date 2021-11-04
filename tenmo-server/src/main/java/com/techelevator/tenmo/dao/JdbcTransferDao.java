@@ -58,33 +58,7 @@ public class JdbcTransferDao implements TransferDao {
         return result;
     }
 
-    @Override
-    public Transfer transferFunds(int userId, String recipientName, double transferAmt) throws UserDoesNotExist, InsufficientFunds {
-        //intake userid, recipientid, and amount
-        // check recipient exists - error if not
-        Transfer returnTransfer = null;
-            if(userDao.findIdByUsername(recipientName) > 0) {
-                //check amount is less than or equal to user balance - error if not
-                if(accountDao.getBalance(userId) >= transferAmt) {
-                    int userAccountID = accountDao.getAccountByUserId(userId);
-                    int recipientAccountId = accountDao.getAccountByUserId(userDao.findIdByUsername(recipientName));
-                    //decrease user by amount
-                    accountDao.withdraw(userAccountID, transferAmt);
-                    //increase recipient by amount
-                    accountDao.deposit(recipientAccountId, transferAmt);
-                    String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                            "VALUES (?,?,?,?,?) RETURNING transfer_id;";
-                    Integer newId = jdbcTemplate.queryForObject(sql, Integer.class, 2, 2, userAccountID, recipientAccountId, transferAmt);
-                    returnTransfer = getTransferById(newId);
-                } else {
-                    throw new InsufficientFunds();
-                }
-            } else {
-                throw new UserDoesNotExist();
-            }
-            //return success and new balance - return transfer or ?
-        return returnTransfer;
-    }
+//
 
 
     private Transfer mapRowtoTransfer(SqlRowSet rs){
@@ -94,6 +68,7 @@ public class JdbcTransferDao implements TransferDao {
         transfer.setTransfer_type_desc(rs.getString("transfer_type_desc"));
         transfer.setTransfer_status_id(rs.getInt("transfer_status_id"));
         transfer.setTransfer_status_desc(rs.getString("transfer_status_desc"));
+        //would have to call to accountdao to make a new account
         transfer.setAccount_from(rs.getInt("account_from"));
         transfer.setAccount_to(rs.getInt("account_to"));
         transfer.setAmount(rs.getDouble("amount"));
@@ -101,5 +76,63 @@ public class JdbcTransferDao implements TransferDao {
         return transfer;
     }
 
+    @Override
+    public Transfer transferFunds(Transfer transferFromClient) throws UserDoesNotExist, InsufficientFunds {
+        //intake userid, recipientid, and amount
+        // check recipient exists - error if not
+        Transfer returnTransfer = null;
+        if(transferFromClient.getAccount_to() > 0) {
+            //check amount is less than or equal to user balance - error if not
+            if(accountDao.getBalance(transferFromClient.getAccount_from()) >= transferFromClient.getAmount()) {//accountDao.getBalance(userId) >= transferAmt
+                //decrease user by amount
+                accountDao.withdraw(transferFromClient);
+                //increase recipient by amount
+                accountDao.deposit(transferFromClient);
+                String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                        "VALUES (?,?,?,?,?) RETURNING transfer_id;";
+                Integer newId = jdbcTemplate.queryForObject(
+                        sql, Integer.class, 2, 2, transferFromClient.getAccount_from(), transferFromClient.getAccount_to(), transferFromClient.getAmount()
+                );
+                returnTransfer = getTransferById(newId);
+            } else {
+                throw new InsufficientFunds();
+            }
+        } else {
+            throw new UserDoesNotExist();
+        }
+        //return success and new balance - return transfer or ?
+        return returnTransfer;
+    }
 
 }
+
+
+
+//Fixed this method to new one
+//@Override
+//    public Transfer transferFunds(int userId, String recipientName, double transferAmt) throws UserDoesNotExist, InsufficientFunds {
+//        //intake userid, recipientid, and amount
+//        // check recipient exists - error if not
+//        Transfer returnTransfer = null;
+//            if(userDao.findIdByUsername(recipientName) > 0) {
+//                //check amount is less than or equal to user balance - error if not
+//                if(accountDao.getBalance(userId) >= transferAmt) {
+//                    int userAccountID = accountDao.getAccountByUserId(userId);
+//                    int recipientAccountId = accountDao.getAccountByUserId(userDao.findIdByUsername(recipientName));
+//                    //decrease user by amount
+//                    accountDao.withdraw(userAccountID, transferAmt);
+//                    //increase recipient by amount
+//                    accountDao.deposit(recipientAccountId, transferAmt);
+//                    String sql = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+//                            "VALUES (?,?,?,?,?) RETURNING transfer_id;";
+//                    Integer newId = jdbcTemplate.queryForObject(sql, Integer.class, 2, 2, userAccountID, recipientAccountId, transferAmt);
+//                    returnTransfer = getTransferById(newId);
+//                } else {
+//                    throw new InsufficientFunds();
+//                }
+//            } else {
+//                throw new UserDoesNotExist();
+//            }
+//            //return success and new balance - return transfer or ?
+//        return returnTransfer;
+//    }

@@ -32,15 +32,16 @@ public class TransferController {
     //TODO test after accountDAO.getAccountByUserId is implemented
     @RequestMapping(value = "/transfer/account", method = RequestMethod.GET)
     public List<Transfer> getTransferByAccountId(Principal principal) throws UserDoesNotExist {
-        return transferDao.getAllUserTransfers(accountDao.getAccountByUserId(userDao.findIdByUsername(principal.getName()))); //userDao.findIdByUsername(principal.getName())
+        return transferDao.getAllUserTransfers(
+                accountDao.getAccountByUserName(principal.getName()).getAccount_id()
+        ); //userDao.findIdByUsername(principal.getName())
     }
 
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
     public Transfer transferFunds(
-            Principal principal, @RequestBody Map<String, String> returnValues
+            //FIXME changed to take in request body as transfer
+            Principal principal, @RequestBody Transfer returnTransfer
     ) throws UserDoesNotExist, InsufficientFunds {
-        return transferDao.transferFunds(
-                userDao.findIdByUsername(principal.getName()), returnValues.get("recipient"), Double.parseDouble(returnValues.get("amount"))
-        );
+        return transferDao.transferFunds(returnTransfer);
     }
 }
