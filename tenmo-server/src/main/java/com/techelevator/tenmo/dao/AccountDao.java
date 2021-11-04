@@ -1,14 +1,19 @@
 package com.techelevator.tenmo.dao;
 
+import com.techelevator.tenmo.exception.UserDoesNotExist;
+
 public interface AccountDao {
 
     //get account balance
-    double getBalance(int userId);
+    double getBalance(int userId) throws UserDoesNotExist;
 
     //withdraw from account balance
-    double withdraw(int accountId, double amount);
+    void withdraw(int accountId, double amount);
 
     //deposit
-    double deposit(int accountId, double amount);
+    void deposit(int accountId, double amount);
+
+    //gets accountId using userId
+    int getAccountByUserId(int userId) throws UserDoesNotExist;
 
 }
