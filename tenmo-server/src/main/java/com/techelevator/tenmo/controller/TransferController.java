@@ -28,7 +28,7 @@ public class TransferController {
     }
 
     @RequestMapping(value = "/transfer/{id}", method = RequestMethod.GET)
-    public Transfer getTransferById(@PathVariable int id){
+    public Transfer getTransferById(@PathVariable int id) throws UserDoesNotExist{
         return transferDao.getTransferById(id);
     }
 

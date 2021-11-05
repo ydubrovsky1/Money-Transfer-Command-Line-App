@@ -1,6 +1,7 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.*;
@@ -82,7 +83,37 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-		
+		System.out.println("List of User Transfers:");
+		boolean isDisplaying = true;
+		while(isDisplaying) {
+			for (Transfer transfer : transferService.getAllUserTransfers()) {
+				//TODO: get the name on the account: id, to/from, name, amt
+				System.out.println(transfer.getTransfer_id()+" | "+transfer.getAccount_from()+" | "+ transfer.getAccount_to() +" | "+transfer.getAmount());
+			}
+			int transferId = console.getUserInputInteger("Enter the ID of transfer you wish to view, or 0 to exit");
+			if(transferId == 0){
+				isDisplaying = false;
+			}
+			else {
+				boolean validTransferId = false;
+
+				for (Transfer transfer : transferService.getAllUserTransfers()){
+					if(transfer.getTransfer_id() == transferId){
+						validTransferId = true;
+						boolean wantToExit = false;
+						while(!wantToExit){
+							System.out.println(transfer.toString());
+							if(console.getUserInput("Push Enter to Continue").equals("")){
+								wantToExit = true;
+							}
+						}
+
+					}
+				}
+					if(validTransferId == false){System.out.println("\nPlease enter a valid transfer Id\n");}
+				}
+			}
+
 	}
 
 	private void viewPendingRequests() {
@@ -108,7 +139,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 						userFound = true;
 						double transferAmount = Double.parseDouble(console.getUserInput("Enter the transfer amount"));
 						if(transferAmount > 0){
-					} else {
+
+					}
+						else {
 							System.out.println("Please enter a valid amount above zero.\n");
 						}
 					}

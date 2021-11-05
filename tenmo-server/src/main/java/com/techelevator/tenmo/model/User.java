@@ -10,15 +10,25 @@ public class User {
    private String username;
    private String password;
    private boolean activated;
+   private int account_id;
    private Set<Authority> authorities = new HashSet<>();
 
    public User() { }
 
-   public User(Long id, String username, String password, String authorities) {
+   public User(Long id, String username, String password, String authorities, int account_id) {
       this.id = id;
       this.username = username;
       this.password = password;
       this.activated = true;
+      this.account_id = account_id;
+   }
+
+   public int getAccount_id() {
+      return account_id;
+   }
+
+   public void setAccount_id(int account_id) {
+      this.account_id = account_id;
    }
 
    public Long getId() {

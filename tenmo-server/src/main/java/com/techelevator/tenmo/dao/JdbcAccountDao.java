@@ -61,6 +61,22 @@ public class JdbcAccountDao implements AccountDao{
         }
     }
 
+    @Override
+    public Account getAccountByAccountId(int accountId) throws UserDoesNotExist {
+        Account returnAccount = null;
+        String sql = "SELECT a.account_id, a.user_id, a.balance, u.username  " +
+                "FROM accounts a " +
+                "JOIN users u " +
+                "ON u.user_id = a.user_id " +
+                "WHERE a.account_id = ?;";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
+        if (results.next()) {
+            return mapRowToAccount(results);
+        } else {
+            throw new UserDoesNotExist();
+        }
+    }
+
     private Account mapRowToAccount(SqlRowSet result) {
         Account account = new Account();
         account.setAccount_id(result.getInt("account_id"));
