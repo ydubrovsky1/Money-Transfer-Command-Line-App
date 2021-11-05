@@ -8,10 +8,10 @@ import java.util.List;
 
 public interface TransferDao {
     //find by transfer id
-    Transfer getTransferById(int transferId);
+    Transfer getTransferById(int transferId) throws UserDoesNotExist;
 
     //list all transfers
-    List<Transfer> getAllUserTransfers(int accountId);
+    List<Transfer> getAllUserTransfers(int accountId) throws UserDoesNotExist;
 
     //transfer funds
     Transfer transferFunds(Transfer transferFromClient) throws UserDoesNotExist, InsufficientFunds;

@@ -17,9 +17,10 @@ public interface AccountDao {
     //deposit
     void deposit(Transfer transferFromClient);
 
-    //gets accountId using userId
+    //gets account by username
     Account getAccountByUserName(String userName) throws UserDoesNotExist;
 
-
+    //get account by userId
+    Account getAccountByAccountId(int accountId) throws UserDoesNotExist;
 
 }

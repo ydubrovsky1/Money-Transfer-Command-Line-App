@@ -2,6 +2,7 @@ package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.exception.InsufficientFunds;
 import com.techelevator.tenmo.exception.UserDoesNotExist;
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -24,7 +25,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public Transfer getTransferById(int transferId) {
+    public Transfer getTransferById(int transferId) throws UserDoesNotExist{
         String sql = "SELECT t.transfer_id, t.transfer_type_id, t.transfer_status_id, t.account_from, t.account_to, t.amount, tt.transfer_type_desc, ts.transfer_status_desc " +
                 "FROM transfers t " +
                 "JOIN transfer_types tt " +
@@ -40,7 +41,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public List<Transfer> getAllUserTransfers(int accountId) {
+    public List<Transfer> getAllUserTransfers(int accountId) throws UserDoesNotExist {
         List<Transfer> result = new ArrayList<>();
         String sql = "SELECT t.transfer_id, t.transfer_type_id, t.transfer_status_id, t.account_from, t.account_to, t.amount, tt.transfer_type_desc, ts.transfer_status_desc " +
                 "FROM transfers t " +
@@ -61,16 +62,20 @@ public class JdbcTransferDao implements TransferDao {
 //
 
 
-    private Transfer mapRowtoTransfer(SqlRowSet rs){
+    private Transfer mapRowtoTransfer(SqlRowSet rs) throws UserDoesNotExist{
         Transfer transfer = new Transfer();
+        Account account_from = accountDao.getAccountByAccountId(rs.getInt("account_from"));
+        Account account_to = accountDao.getAccountByAccountId(rs.getInt("account_to"));
+
+        transfer.setAccount_to(account_to);
+        transfer.setAccount_from(account_from);
         transfer.setTransfer_id(rs.getInt("transfer_id"));
         transfer.setTransfer_type_id(rs.getInt("transfer_type_id"));
         transfer.setTransfer_type_desc(rs.getString("transfer_type_desc"));
         transfer.setTransfer_status_id(rs.getInt("transfer_status_id"));
         transfer.setTransfer_status_desc(rs.getString("transfer_status_desc"));
-        //would have to call to accountdao to make a new account
-        transfer.setAccount_from(rs.getInt("account_from"));
-        transfer.setAccount_to(rs.getInt("account_to"));
+        transfer.setAccount_from_id(rs.getInt("account_from"));
+        transfer.setAccount_to_id(rs.getInt("account_to"));
         transfer.setAmount(rs.getDouble("amount"));
 
         return transfer;
@@ -81,9 +86,9 @@ public class JdbcTransferDao implements TransferDao {
         //intake userid, recipientid, and amount
         // check recipient exists - error if not
         Transfer returnTransfer = null;
-        if(transferFromClient.getAccount_to() > 0) {
+        if(transferFromClient.getAccount_to_id() > 0) {
             //check amount is less than or equal to user balance - error if not
-            if(accountDao.getBalance(transferFromClient.getAccount_from()) >= transferFromClient.getAmount()) {//accountDao.getBalance(userId) >= transferAmt
+            if(accountDao.getBalance(transferFromClient.getAccount_from_id()) >= transferFromClient.getAmount()) {//accountDao.getBalance(userId) >= transferAmt
                 //decrease user by amount
                 accountDao.withdraw(transferFromClient);
                 //increase recipient by amount
