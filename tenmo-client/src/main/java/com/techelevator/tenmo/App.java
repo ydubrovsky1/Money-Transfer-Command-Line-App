@@ -139,7 +139,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 						userFound = true;
 						double transferAmount = Double.parseDouble(console.getUserInput("Enter the transfer amount"));
 						if(transferAmount > 0){
-
+							Transfer transferToDisplay = transferService.transferFunds(transferAmount, user.getAccount_id());
+							System.out.println(transferToDisplay);
+							isSent = true;
 					}
 						else {
 							System.out.println("Please enter a valid amount above zero.\n");

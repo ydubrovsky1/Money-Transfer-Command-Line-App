@@ -13,6 +13,8 @@ public class Transfer {
     private int account_to_id;
     private double amount;
 
+    public Transfer(){}
+
     public Transfer(int transfer_id, int transfer_type_id, String transfer_type_desc, int transfer_status_id, String transfer_status_desc, Account account_from, int account_from_id, Account account_to, int account_to_id){
         this.transfer_id = transfer_id;
         this.transfer_type_id = transfer_type_id;
@@ -29,9 +31,9 @@ public class Transfer {
     @Override
     public String toString() {
         return "Transfer id " + this.transfer_id +
-                " \nfrom: " + this.account_from +
-                " \nto: " + this.account_to +
-                " \namount:  " + this.amount +
+                " \nfrom: " + this.account_from_id +
+                " \nto: " + this.account_to_id +
+                " \namount: " + this.amount +
                 " \nstatus: " + this.transfer_status_desc +
                 "\n";
     }

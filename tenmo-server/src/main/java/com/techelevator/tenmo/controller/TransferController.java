@@ -45,6 +45,7 @@ public class TransferController {
             //FIXME changed to take in request body as transfer
             Principal principal, @Valid @RequestBody Transfer returnTransfer
     ) throws UserDoesNotExist, InsufficientFunds {
+        returnTransfer.setAccount_from_id(accountDao.getAccountByUserName(principal.getName()).getAccount_id());
         return transferDao.transferFunds(returnTransfer);
     }
 }
