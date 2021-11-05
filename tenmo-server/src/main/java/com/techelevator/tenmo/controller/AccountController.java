@@ -24,9 +24,10 @@ public class AccountController {
         this.userDao = userDao;
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+
     @RequestMapping(path = "/balance")
     public double getBalance(Principal principal) throws UserDoesNotExist {
-        return accountDao.getBalance(userDao.findIdByUsername(principal.getName()));
+        return accountDao.getBalance(accountDao.getAccountByUserName(principal.getName()).getAccount_id());
+
     }
 }
