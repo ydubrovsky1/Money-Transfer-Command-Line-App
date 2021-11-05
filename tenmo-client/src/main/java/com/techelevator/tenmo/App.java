@@ -1,9 +1,9 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
-import com.techelevator.tenmo.services.AuthenticationService;
-import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.*;
 import com.techelevator.view.ConsoleService;
 
 public class App {
@@ -25,16 +25,24 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
+    private UserService userService;
+    private TransferService transferService;
+    private AccountService accountService;
 
     public static void main(String[] args) {
-    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
+    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new UserService(),
+				new TransferService(), new AccountService());
     	app.run();
     }
 
-    public App(ConsoleService console, AuthenticationService authenticationService) {
+	public App(ConsoleService console, AuthenticationService authenticationService, UserService userService, TransferService transferService, AccountService accountService) {
 		this.console = console;
 		this.authenticationService = authenticationService;
+		this.userService = userService;
+		this.transferService = transferService;
+		this.accountService = accountService;
 	}
+
 
 	public void run() {
 		System.out.println("*********************");
@@ -69,7 +77,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
-		
+		System.out.println("Your current balance is: $" + accountService.getBalance());
 	}
 
 	private void viewTransferHistory() {
@@ -84,7 +92,31 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub
-		
+		System.out.println("Who do you want to send money to?");
+		boolean isSent = false;
+		while(!isSent) {
+			for (User user : userService.listAllUsers()) {
+				System.out.println(user.getId() + " | " + user.getUsername());
+			}
+			int userId = console.getUserInputInteger("Enter the ID of user you are sending to (0 to cancel)");
+			if(userId == 0){
+				isSent = true;
+			}
+			else { boolean userFound = false;
+				for (User user : userService.listAllUsers()){
+					if(user.getId() == userId){
+						userFound = true;
+						double transferAmount = Double.parseDouble(console.getUserInput("Enter the transfer amount"));
+						if(transferAmount > 0){
+					} else {
+							System.out.println("Please enter a valid amount above zero.\n");
+						}
+					}
+				} if(!userFound) {
+					System.out.println("Please enter valid userId\n");
+				}
+			}
+		}
 	}
 
 	private void requestBucks() {
@@ -139,6 +171,9 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			UserCredentials credentials = collectUserCredentials();
 		    try {
 				currentUser = authenticationService.login(credentials);
+				userService.setAuthUser(currentUser);
+				transferService.setAuthUser(currentUser);
+				accountService.setAuthUser(currentUser);
 			} catch (AuthenticationServiceException e) {
 				System.out.println("LOGIN ERROR: "+e.getMessage());
 				System.out.println("Please attempt to login again.");
