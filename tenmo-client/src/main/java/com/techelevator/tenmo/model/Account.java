@@ -51,7 +51,7 @@ public class Account {
     public String toString() {
         return "Account id: " + this.account_id +
                 "\nuser id: " + this.user_id +
-                "\nbalance: "+ this.balance +
-                "\nusername: "+ this.username;
+                "\nbalance: " + this.balance +
+                "\nusername: " + this.username;
     }
 }

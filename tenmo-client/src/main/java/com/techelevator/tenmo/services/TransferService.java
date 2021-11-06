@@ -14,7 +14,7 @@ public class TransferService {
 
     private AuthenticatedUser authUser = null;
 
-    public void setAuthUser (AuthenticatedUser authUser){
+    public void setAuthUser(AuthenticatedUser authUser){
         this.authUser = authUser;
     }
 
@@ -23,7 +23,9 @@ public class TransferService {
         Transfer transfer = null;
         try{
 
-            transfer = restTemplate.getForObject(API_BASE_URL +"/transfer/" +transferId, Transfer.class, makeAuthEntity());
+            transfer = restTemplate.getForObject(
+                    API_BASE_URL +"/transfer/" +transferId, Transfer.class, makeAuthEntity()
+            );
         } catch (RestClientResponseException | ResourceAccessException e){
             System.out.println(e.getMessage());
         }
@@ -33,7 +35,9 @@ public class TransferService {
     public Transfer[] getAllUserTransfers(){
         Transfer[] transfers = null;
         try{
-            ResponseEntity<Transfer[]> response  = restTemplate.exchange(API_BASE_URL + "/transfer/account", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+            ResponseEntity<Transfer[]> response  = restTemplate.exchange(
+                    API_BASE_URL + "/transfer/account", HttpMethod.GET, makeAuthEntity(), Transfer[].class
+            );
             transfers = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e){
             System.out.println(e.getMessage());
