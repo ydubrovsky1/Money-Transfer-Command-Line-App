@@ -18,19 +18,21 @@ public class UserService {
 
     private AuthenticatedUser authUser = null;
 
-    public void setAuthUser (AuthenticatedUser authUser){
+    public void setAuthUser(AuthenticatedUser authUser) {
         this.authUser = authUser;
     }
 
-    public User[] listAllUsers (){
-    User[] users = null;
-    try{
-        ResponseEntity<User[]> response  = restTemplate.exchange(API_BASE_URL + "/users", HttpMethod.GET, makeAuthEntity(), User[].class);
-        users = response.getBody();
-    } catch (RestClientResponseException | ResourceAccessException e){
-        System.out.println(e.getMessage());
-    }
-    return users;
+    public User[] listAllUsers() {
+        User[] users = null;
+        try {
+            ResponseEntity<User[]> response = restTemplate.exchange(
+                    API_BASE_URL + "/users", HttpMethod.GET, makeAuthEntity(), User[].class
+            );
+            users = response.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println(e.getMessage());
+        }
+        return users;
     }
 
     private HttpEntity<Void> makeAuthEntity() {
@@ -38,7 +40,6 @@ public class UserService {
         headers.setBearerAuth(authUser.getToken());
         return new HttpEntity<>(headers);
     }
-
 
 
 }

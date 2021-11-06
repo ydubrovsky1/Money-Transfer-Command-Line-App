@@ -46,4 +46,12 @@ public class Account {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    @Override
+    public String toString() {
+        return "Account id: " + this.account_id +
+                "\nuser id: " + this.user_id +
+                "\nbalance: " + this.balance +
+                "\nusername: " + this.username;
+    }
 }

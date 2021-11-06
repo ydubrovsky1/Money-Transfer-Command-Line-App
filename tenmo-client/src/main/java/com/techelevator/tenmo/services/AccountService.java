@@ -23,7 +23,9 @@ public class AccountService {
     public double getBalance(){
         double balance = 0;
         try{
-            ResponseEntity<Double> response  = restTemplate.exchange(API_BASE_URL + "/balance", HttpMethod.GET, makeAuthEntity(), Double.class);
+            ResponseEntity<Double> response = restTemplate.exchange(
+                    API_BASE_URL + "/balance", HttpMethod.GET, makeAuthEntity(), Double.class
+            );
             balance = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e){
             System.out.println(e.getMessage());

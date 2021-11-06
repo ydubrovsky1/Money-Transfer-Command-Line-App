@@ -13,7 +13,9 @@ public class Transfer {
     private int account_to_id;
     private double amount;
 
-    public Transfer(int transfer_id, int transfer_type_id, String transfer_type_desc, int transfer_status_id, String transfer_status_desc, Account account_from, int account_from_id, Account account_to, int account_to_id){
+    public Transfer(){}
+
+    public Transfer(int transfer_id, int transfer_type_id, String transfer_type_desc, int transfer_status_id, String transfer_status_desc, Account account_from, int account_from_id, Account account_to, int account_to_id, double amount){
         this.transfer_id = transfer_id;
         this.transfer_type_id = transfer_type_id;
         this.transfer_type_desc = transfer_type_desc;
@@ -28,12 +30,12 @@ public class Transfer {
 
     @Override
     public String toString() {
-        return "Transfer id " + this.transfer_id +
-                " \nfrom: " + this.account_from +
-                " \nto: " + this.account_to +
-                " \namount:  " + this.amount +
-                " \nstatus: " + this.transfer_status_desc +
-                "\n";
+        return "Id: " + this.transfer_id +
+                "\nFrom: " + this.account_from.getUsername() +
+                "\nTo: " + this.account_to.getUsername() +
+                "\nType: " + this.transfer_type_desc +
+                "\nStatus: " + this.transfer_status_desc +
+                "\nAmount: " + this.amount;
     }
 
     public int getTransfer_id() {
